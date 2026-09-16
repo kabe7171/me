@@ -1,32 +1,51 @@
-# React + TypeScript + Vite
+# Task Kanban
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+個人用のタスク管理カンバン。Vite + React + TypeScript + Tailwind CSS + shadcn/ui + Supabase で構築。
 
-Currently, two official plugins are available:
+## セットアップ
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. 依存関係をインストールする。
 
-## React Compiler
+   ```bash
+   npm install
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. `.env.example` を `.env` にコピーし、Supabase の値を入れる（Supabase Dashboard > Project Settings > API）。
 
-## Expanding the Oxlint configuration
+   ```bash
+   cp .env.example .env
+   ```
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+3. Supabase Dashboard の SQL Editor（または `supabase db push`）で `supabase/migrations/0001_tasks.sql` を実行する。
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+4. `allowed_emails` テーブルに自分のメールアドレスを登録する。
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+   ```sql
+   insert into public.allowed_emails (email) values ('you@example.com');
+   ```
+
+5. Supabase Dashboard の Authentication 設定で以下を行う。
+   - 「Allow new users to sign up」を OFF にする（招待制。新規登録を防ぐ）。
+   - Site URL / Redirect URLs に `http://localhost:5173` を追加する。
+   - Authentication > Users で自分のメールアドレスを「Invite user」する。
+
+6. 開発サーバーを起動する。
+
+   ```bash
+   npm run dev
+   ```
+
+`.env` が未設定の場合、ビルドは通るが起動時に環境変数の設定を促す画面が表示される。
+
+## 画面
+
+- ログイン：メールアドレスを入力するとマジックリンクが送られる。新規登録は不可（`allowed_emails` に登録されたアカウントのみ利用可能）。
+- ボード：6カラム（未着手 / 設計中 / 実装中 / 検収待ち / 完了 / 要確認）を横並びで表示する。
+  - 「＋ 新規タスク」でタスクを作成する。
+  - カードをドラッグして列を移動できる。
+  - カードをクリックすると編集ダイアログが開く（タイトル・説明・状態を変更できる）。
+  - カード右上のゴミ箱アイコンから削除できる（確認ダイアログあり）。
+
+## 今後の予定
+
+- Phase 2 以降でオーケストレーション（AI連携）を追加する予定。`src/lib/tasks.ts` はそのために UI に依存しない純粋なデータアクセス層として作られている。
