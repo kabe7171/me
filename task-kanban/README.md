@@ -16,7 +16,7 @@
    cp .env.example .env
    ```
 
-3. Supabase Dashboard の SQL Editor（または `supabase db push`）で `supabase/migrations/0001_tasks.sql` を実行する。
+3. Supabase Dashboard の SQL Editor（または `supabase db push`）で `supabase/migrations/` の SQL を番号順に実行する。
 
 4. `allowed_emails` テーブルに自分のメールアドレスを登録する。
 
