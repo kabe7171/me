@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>原点リマインダー</title>
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --fg:#1A1A1A;
+    --accent:#234A78;
+    --line:#E2E2E2;
+    --muted:#8C8C8C;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic","Meiryo",sans-serif;
+    font-size:15px;
+    line-height:1.8;
+    -webkit-text-size-adjust:100%;
+    overflow-x:hidden;
+  }
+  .serif{font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;font-weight:400;}
+  .app{max-width:480px;margin:0 auto;padding:20px 16px 104px;}
+  .notice{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:16px;
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .notice.error{color:var(--fg);border-color:var(--accent);}
+  h1{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
+    font-weight:400;
+    font-size:20px;
+    line-height:1.6;
+    margin:0 0 20px;
+  }
+  h2{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
+    font-weight:400;
+    font-size:16px;
+    margin:28px 0 12px;
+  }
+  p{margin:0 0 12px;}
+  .muted{color:var(--muted);}
+  .small{font-size:13px;line-height:1.7;}
+  .card{
+    display:block;
+    width:100%;
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--fg);
+    font:inherit;
+    padding:20px 16px;
+    margin:0 0 14px;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .card.selected{border-color:var(--accent);}
+  .card-title{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;
+    font-size:19px;
+    line-height:1.5;
+    margin-bottom:10px;
+    overflow-wrap:break-word;
+  }
+  .card-body{font-size:14px;line-height:1.9;overflow-wrap:break-word;}
+  .card-lead .card-title{font-size:22px;margin-bottom:14px;}
+  .card-lead .card-body{font-size:15px;}
+  .source{display:inline-block;margin-top:14px;font-size:12px;color:var(--muted);}
+  .btn{
+    display:block;
+    width:100%;
+    min-height:44px;
+    padding:10px 14px;
+    border:1px solid var(--accent);
+    border-radius:8px;
+    background:var(--bg);
+    color:var(--accent);
+    font:inherit;
+    line-height:1.5;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .btn + .btn{margin-top:10px;}
+  .btn-primary{background:var(--accent);color:#FFFFFF;}
+  .btn-quiet{border-color:var(--line);color:var(--muted);}
+  .btn[disabled]{border-color:var(--line);color:var(--muted);cursor:default;}
+  .row3{display:flex;gap:8px;margin-bottom:14px;}
+  .row3 .btn{margin-top:0;font-size:14px;padding:10px 4px;text-align:center;}
+  textarea{
+    width:100%;
+    min-height:88px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+    font:inherit;
+    font-size:14px;
+    line-height:1.8;
+    color:var(--fg);
+    background:var(--bg);
+    resize:vertical;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .field-note{font-size:12px;color:var(--muted);margin:6px 0 12px;}
+  .hr{height:1px;background:var(--line);border:0;margin:24px 0;}
+  .hist-row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+    min-height:44px;
+  }
+  .hist-date{width:78px;flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .hist-title{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .hist-result{flex:none;font-size:14px;width:30px;text-align:right;}
+  .hist-result.kept{color:var(--accent);}
+  .hist-none{color:var(--muted);font-size:12px;}
+  .rank-row{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .rank-title{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rank-num{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .tabs{
+    position:fixed;
+    left:0;right:0;bottom:0;
+    display:flex;
+    background:var(--bg);
+    border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .tab{
+    flex:1;
+    min-height:56px;
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    font:inherit;
+    font-size:14px;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .tab.active{color:var(--accent);}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+  <div class="app">
+    <div id="banner"></div>
+    <div id="view"></div>
+  </div>
+  <nav class="tabs">
+    <button class="tab" type="button" data-tab="today">今日</button>
+    <button class="tab" type="button" data-tab="history">履歴</button>
+    <button class="tab" type="button" data-tab="settings">設定</button>
+  </nav>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ----------------------------------------------------------------
+     基準カード
+  ---------------------------------------------------------------- */
+  var CARDS = [
+    { id:'origin-01', title:'究極の報酬', body:'「自分の内側にある言葉にできない感性」と「緻密に積み上げた論理」を統合して形にしたものが、他者の心に届き、変化を生む瞬間。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-02', title:'打算では動けない', body:'打算で本心と乖離した行動をすると、長く続かないのだと悟った。', source:'https://readwise.io/open/1044123950' },
+    { id:'origin-03', title:'順序を逆にしない', body:'興味・衝動が先、目的・戦略は後。この順序が守られない限り、パフォーマンスは発揮されない。', source:'https://readwise.io/open/1044123205' },
+    { id:'origin-04', title:'全力は「状態」', body:'全力とは意志の力による努力ではなく、対象に没入している状態のこと。', source:'https://readwise.io/open/1044123205' },
+    { id:'origin-05', title:'熱に浮かされた仕事を', body:'仕事は仕事、と割り切れるタイプではない。義務や責務で仕事はできない、おれは。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-06', title:'強みは継続から', body:'強みとは継続できること。そしてそれは、興味があることからしか生まれない。', source:'https://readwise.io/open/1044123950' },
+    { id:'origin-07', title:'許容できないリスク', body:'お金や時間の不足は許容できる。自分の意思で行動できない状態と、興味のないことをやらされることは許容できない。', source:'https://readwise.io/open/1044123950' },
+    { id:'origin-08', title:'プライドの源泉', body:'プライドは年収でも成果でも他人の目でもなく、自分の理想の生き方をちゃんとやっているかで保たれる。', source:'https://readwise.io/open/1044123950' },
+    { id:'origin-09', title:'文房具に戻らない', body:'従業員という立場は、つまり従っているということ。自分で自分の予定を決められるようになりたい。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-10', title:'何屋ですか', body:'30歳になった時に、あなたは何屋ですかと言われて、自分の納得できる答えが得られればいい。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-11', title:'スペックより文脈', body:'文脈で選ぶ。スペックじゃない。売ってるのは物語で、その人個人の背景や、自分のエモーショナルな文脈。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-12', title:'作る喜びをもっと', body:'そんなに覚悟を決めてやらなくても、楽しければいいじゃない。作る喜びをもっと。', source:'https://readwise.io/open/1044123415' },
+    { id:'origin-13', title:'人生も実験', body:'自分の人生も実験や。トライ&エラーをするしかない。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-14', title:'賞味期限がある', body:'すぐやることの重要さ。物事には賞味期限がある、タイミングがある。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-15', title:'分けて分けて分けまくる', body:'考えられなくなるのは、分けることができていないから。広げて、分ける。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-16', title:'まず1分で結論', body:'1分で出した結論と1時間で出した結論は大きくは変わらない。直感で出した後に、なぜそうなったかを分解する。', source:'https://readwise.io/open/1044123185' },
+    { id:'origin-17', title:'超長期と近視眼', body:'未来の恐怖は漠然としたギャップから来る。超長期の方向性は維持しつつ、そこへの道筋は都度考える。', source:'https://readwise.io/open/1044123950' },
+    { id:'origin-18', title:'午後は実験に使う', body:'早起きして猛烈に働き、14時以降は実験的な取り組みや自分の好きなことをする。', source:'https://readwise.io/open/1044123950' },
+    { id:'origin-19', title:'無償でも楽しいこと', body:'写真の制作、インテリアの配置を考えること、コーヒーを入れること、本を読むこと、美術館に行くこと。', source:'https://readwise.io/open/1044123415' },
+    { id:'origin-20', title:'あの苦しさを忘れない', body:'おれは大事にしよう、この思い出せなくなるかもしれないから。', source:'https://readwise.io/open/1044123185' }
+  ];
+
+  var CARD_MAP = {};
+  for (var ci = 0; ci < CARDS.length; ci++) { CARD_MAP[CARDS[ci].id] = CARDS[ci]; }
+
+  var STORAGE_KEY = 'origin-daily-v1';
+  var DAY_START_HOUR = 4;
+  var RESULT_LABEL = { kept:'守れた', unsure:'怪しい', missed:'守れなかった' };
+  var RESULT_ICON = { kept:'○', unsure:'△', missed:'×' };
+
+  /* ----------------------------------------------------------------
+     日付
+  ---------------------------------------------------------------- */
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+  function toYmd(date) {
+    return date.getFullYear() + '-' + pad2(date.getMonth() + 1) + '-' + pad2(date.getDate());
+  }
+
+  // 「その日」の境界は午前4時。午前3時は前日扱い。
+  function getToday() {
+    var now = new Date();
+    now.setHours(now.getHours() - DAY_START_HOUR);
+    return toYmd(now);
+  }
+
+  function parseYmd(s) {
+    if (typeof s !== 'string') { return null; }
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (!m) { return null; }
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0, 0);
+  }
+
+  // a - b を日数で返す。不正な日付は null。
+  function daysBetween(a, b) {
+    var da = parseYmd(a), db = parseYmd(b);
+    if (!da || !db) { return null; }
+    return Math.round((da.getTime() - db.getTime()) / 86400000);
+  }
+
+  function shiftYmd(ymd, diff) {
+    var d = parseYmd(ymd);
+    if (!d) { return ymd; }
+    d.setDate(d.getDate() + diff);
+    return toYmd(d);
+  }
+
+  function formatYmd(ymd) {
+    var d = parseYmd(ymd);
+    if (!d) { return ymd; }
+    return (d.getMonth() + 1) + '/' + d.getDate() + '（' + '日月火水木金土'.charAt(d.getDay()) + '）';
+  }
+
+  /* ----------------------------------------------------------------
+     保存
+  ---------------------------------------------------------------- */
+  var storageOK = true;
+  var state = { logs:{}, shown:{}, draw:null };
+  var ui = { tab:'today', reflecting:false, pendingResult:null, importError:'' };
+
+  function isPlainObject(v) {
+    return v !== null && typeof v === 'object' && !Array.isArray(v);
+  }
+
+  function normalize(raw) {
+    var out = { logs:{}, shown:{}, draw:null };
+    if (!isPlainObject(raw)) { return out; }
+
+    if (isPlainObject(raw.logs)) {
+      for (var day in raw.logs) {
+        if (!Object.prototype.hasOwnProperty.call(raw.logs, day)) { continue; }
+        if (!parseYmd(day)) { continue; }
+        var e = raw.logs[day];
+        if (!isPlainObject(e)) { continue; }
+        var result = (e.result === 'kept' || e.result === 'unsure' || e.result === 'missed') ? e.result : null;
+        out.logs[day] = {
+          cardId: typeof e.cardId === 'string' ? e.cardId : (typeof e.choice === 'string' ? e.choice : ''),
+          choice: typeof e.choice === 'string' ? e.choice : (typeof e.cardId === 'string' ? e.cardId : ''),
+          choiceAt: typeof e.choiceAt === 'string' ? e.choiceAt : null,
+          result: result,
+          resultAt: typeof e.resultAt === 'string' ? e.resultAt : null,
+          note: typeof e.note === 'string' ? e.note.slice(0, 200) : ''
+        };
+      }
+    }
+
+    if (isPlainObject(raw.shown)) {
+      for (var cid in raw.shown) {
+        if (!Object.prototype.hasOwnProperty.call(raw.shown, cid)) { continue; }
+        if (parseYmd(raw.shown[cid])) { out.shown[cid] = raw.shown[cid]; }
+      }
+    }
+
+    if (isPlainObject(raw.draw) && parseYmd(raw.draw.date) && Array.isArray(raw.draw.candidates)) {
+      var cand = [];
+      for (var i = 0; i < raw.draw.candidates.length; i++) {
+        if (typeof raw.draw.candidates[i] === 'string') { cand.push(raw.draw.candidates[i]); }
+      }
+      out.draw = { date: raw.draw.date, candidates: cand, redrawn: raw.draw.redrawn === true };
+    }
+
+    return out;
+  }
+
+  function load() {
+    var raw = null;
+    try {
+      localStorage.setItem(STORAGE_KEY + '-probe', '1');
+      localStorage.removeItem(STORAGE_KEY + '-probe');
+      raw = localStorage.getItem(STORAGE_KEY);
+    } catch (err) {
+      storageOK = false;
+      return;
+    }
+    if (!raw) { return; }
+    try {
+      state = normalize(JSON.parse(raw));
+    } catch (err) {
+      state = { logs:{}, shown:{}, draw:null };
+    }
+  }
+
+  function save() {
+    if (!storageOK) { return; }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+      storageOK = false;
+      renderBanner();
+    }
+  }
+
+  /* ----------------------------------------------------------------
+     集計
+  ---------------------------------------------------------------- */
+  function buildStats() {
+    var stats = {};
+    for (var day in state.logs) {
+      if (!Object.prototype.hasOwnProperty.call(state.logs, day)) { continue; }
+      var e = state.logs[day];
+      if (!e.result) { continue; }
+      var id = e.cardId;
+      if (!stats[id]) { stats[id] = { kept:0, unsure:0, missed:0, total:0 }; }
+      stats[id][e.result] += 1;
+      stats[id].total += 1;
+    }
+    return stats;
+  }
+
+  /* ----------------------------------------------------------------
+     抽選
+  ---------------------------------------------------------------- */
+  function scoreFor(cardId, today, stats) {
+    var score = 1;
+    var shownAt = state.shown[cardId];
+    if (shownAt) {
+      var diff = daysBetween(today, shownAt);
+      if (diff !== null && diff >= 0 && diff < 14) { score *= 0.2; }
+    }
+    var s = stats[cardId];
+    if (s) {
+      score += s.missed * 1.5;
+      score += s.unsure * 0.7;
+    }
+    return score < 0.01 ? 0.01 : score;
+  }
+
+  function drawCandidates(today, count) {
+    var stats = buildStats();
+    var pool = [];
+    for (var i = 0; i < CARDS.length; i++) {
+      pool.push({ id: CARDS[i].id, w: scoreFor(CARDS[i].id, today, stats) });
+    }
+    var picked = [];
+    var n = Math.min(count, pool.length);
+    for (var k = 0; k < n; k++) {
+      var total = 0, j;
+      for (j = 0; j < pool.length; j++) { total += pool[j].w; }
+      var r = Math.random() * total;
+      var idx = pool.length - 1;
+      for (j = 0; j < pool.length; j++) {
+        r -= pool[j].w;
+        if (r <= 0) { idx = j; break; }
+      }
+      picked.push(pool[idx].id);
+      pool.splice(idx, 1);
+    }
+    for (var m = 0; m < picked.length; m++) { state.shown[picked[m]] = today; }
+    return picked;
+  }
+
+  function ensureDraw(today) {
+    if (state.draw && state.draw.date === today && state.draw.candidates.length) { return; }
+    state.draw = { date: today, candidates: drawCandidates(today, 3), redrawn: false };
+    save();
+  }
+
+  /* ----------------------------------------------------------------
+     描画ヘルパー
+  ---------------------------------------------------------------- */
+  function esc(s) {
+    return String(s === null || s === undefined ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function cardTitleOf(id) {
+    var c = CARD_MAP[id];
+    return c ? c.title : '（削除された基準）';
+  }
+
+  function cardHtml(card, opts) {
+    opts = opts || {};
+    var cls = 'card' + (opts.lead ? ' card-lead' : '') + (opts.selected ? ' selected' : '');
+    var tag = opts.static ? 'div' : 'button';
+    var attrs = opts.static ? '' : ' type="button" data-card-id="' + esc(card.id) + '"';
+    return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
+      '<div class="card-title">' + esc(card.title) + '</div>' +
+      '<div class="card-body">' + esc(card.body) + '</div>' +
+      '</' + tag + '>';
+  }
+
+  function missingCardHtml() {
+    return '<div class="card card-lead">' +
+      '<div class="card-title">（削除された基準）</div>' +
+      '<div class="card-body muted small">この基準はカード一覧から見つからなかったよ。</div>' +
+      '</div>';
+  }
+
+  var viewEl = document.getElementById('view');
+  var bannerEl = document.getElementById('banner');
+
+  function renderBanner() {
+    var html = '';
+    if (!storageOK) {
+      html += '<div class="notice">この端末では記録が保存されません。</div>';
+    }
+    if (ui.importError) {
+      html += '<div class="notice error">' + esc(ui.importError) + '</div>';
+    }
+    bannerEl.innerHTML = html;
+  }
+
+  /* ----------------------------------------------------------------
+     今日タブ
+  ---------------------------------------------------------------- */
+  function renderToday() {
+    var today = getToday();
+    var log = state.logs[today];
+
+    if (!log) { return renderStateA(today); }
+    if (!log.result) { return renderStateB(today, log); }
+    return renderStateC(today, log);
+  }
+
+  function renderStateA(today) {
+    ensureDraw(today);
+    var html = '<h1>今日、何を物差しにする？</h1>';
+    var cands = state.draw.candidates;
+    for (var i = 0; i < cands.length; i++) {
+      var c = CARD_MAP[cands[i]];
+      if (!c) { continue; }
+      html += cardHtml(c, {});
+    }
+    var done = state.draw.redrawn === true;
+    html += '<button class="btn btn-quiet" type="button" id="redraw"' + (done ? ' disabled' : '') + '>' +
+      (done ? '引き直しは今日はここまで' : '引き直す（1日1回）') + '</button>';
+    viewEl.innerHTML = html;
+
+    var nodes = viewEl.querySelectorAll('[data-card-id]');
+    for (var k = 0; k < nodes.length; k++) {
+      nodes[k].addEventListener('click', onChooseCard);
+    }
+    var redraw = document.getElementById('redraw');
+    if (redraw && !done) { redraw.addEventListener('click', onRedraw); }
+  }
+
+  function onChooseCard(ev) {
+    var id = ev.currentTarget.getAttribute('data-card-id');
+    var today = getToday();
+    if (state.logs[today]) { render(); return; }
+    state.logs[today] = {
+      cardId: id,
+      choice: id,
+      choiceAt: new Date().toISOString(),
+      result: null,
+      resultAt: null,
+      note: ''
+    };
+    ui.reflecting = false;
+    ui.pendingResult = null;
+    save();
+    render();
+  }
+
+  function onRedraw() {
+    var today = getToday();
+    if (!state.draw || state.draw.date !== today || state.draw.redrawn) { render(); return; }
+    state.draw = { date: today, candidates: drawCandidates(today, 3), redrawn: true };
+    save();
+    render();
+  }
+
+  function renderStateB(today, log) {
+    var card = CARD_MAP[log.cardId];
+    var html = '<h1>今日の物差し</h1>';
+    html += card ? cardHtml(card, { lead:true, selected:true, static:true }) : missingCardHtml();
+    if (card) {
+      html += '<a class="source" href="' + esc(card.source) + '" target="_blank" rel="noopener noreferrer">出典をひらく</a>';
+    }
+    html += '<hr class="hr">';
+
+    if (!ui.reflecting) {
+      html += '<button class="btn" type="button" id="reflect">今日を振り返る</button>';
+    } else {
+      html += '<p class="small muted">この物差し、今日は守れた？</p>';
+      html += '<div class="row3">';
+      html += resultBtn('kept');
+      html += resultBtn('unsure');
+      html += resultBtn('missed');
+      html += '</div>';
+      if (ui.pendingResult) {
+        html += '<textarea id="note" maxlength="200" placeholder="ひとこと（任意）">' + esc(log.note || '') + '</textarea>';
+        html += '<p class="field-note">200字まで。空でもいいよ。</p>';
+        html += '<button class="btn btn-primary" type="button" id="record">記録する</button>';
+      }
+    }
+    viewEl.innerHTML = html;
+
+    var reflect = document.getElementById('reflect');
+    if (reflect) {
+      reflect.addEventListener('click', function () {
+        ui.reflecting = true;
+        render();
+      });
+    }
+    var rbs = viewEl.querySelectorAll('[data-result]');
+    for (var i = 0; i < rbs.length; i++) {
+      rbs[i].addEventListener('click', onPickResult);
+    }
+    var rec = document.getElementById('record');
+    if (rec) { rec.addEventListener('click', onRecord); }
+  }
+
+  function resultBtn(value) {
+    var on = ui.pendingResult === value;
+    return '<button class="btn' + (on ? ' btn-primary' : '') + '" type="button" data-result="' + value + '">' +
+      RESULT_LABEL[value] + '</button>';
+  }
+
+  function onPickResult(ev) {
+    ui.pendingResult = ev.currentTarget.getAttribute('data-result');
+    render();
+  }
+
+  function onRecord() {
+    var today = getToday();
+    var log = state.logs[today];
+    if (!log || !ui.pendingResult) { render(); return; }
+    var noteEl = document.getElementById('note');
+    log.note = noteEl ? String(noteEl.value).slice(0, 200) : '';
+    log.result = ui.pendingResult;
+    log.resultAt = new Date().toISOString();
+    ui.reflecting = false;
+    ui.pendingResult = null;
+    save();
+    render();
+  }
+
+  function renderStateC(today, log) {
+    var card = CARD_MAP[log.cardId];
+    var html = '<h1>今日はもう記録済み</h1>';
+    html += card ? cardHtml(card, { lead:true, selected:true, static:true }) : missingCardHtml();
+    html += '<p class="small muted">' + esc(RESULT_ICON[log.result] + '　' + RESULT_LABEL[log.result]) + '</p>';
+    if (log.note) {
+      html += '<p class="small">' + esc(log.note) + '</p>';
+    }
+    html += '<hr class="hr">';
+    html += '<button class="btn btn-quiet" type="button" id="redo">記録をやり直す</button>';
+    viewEl.innerHTML = html;
+
+    var redo = document.getElementById('redo');
+    if (redo) {
+      redo.addEventListener('click', function () {
+        var l = state.logs[getToday()];
+        if (!l) { render(); return; }
+        ui.pendingResult = l.result;
+        l.result = null;
+        l.resultAt = null;
+        ui.reflecting = true;
+        save();
+        render();
+      });
+    }
+  }
+
+  /* ----------------------------------------------------------------
+     履歴タブ
+  ---------------------------------------------------------------- */
+  function renderHistory() {
+    var today = getToday();
+    var html = '<h1>履歴</h1>';
+    var stats = buildStats();
+
+    var rank = [];
+    for (var id in stats) {
+      if (!Object.prototype.hasOwnProperty.call(stats, id)) { continue; }
+      if (stats[id].total <= 0) { continue; }
+      rank.push({ id:id, rate: stats[id].kept / stats[id].total, total: stats[id].total });
+    }
+    rank.sort(function (a, b) {
+      if (a.rate !== b.rate) { return a.rate - b.rate; }
+      return b.total - a.total;
+    });
+    rank = rank.slice(0, 5);
+
+    if (rank.length) {
+      html += '<h2>守れた率が低い基準</h2>';
+      for (var r = 0; r < rank.length; r++) {
+        html += '<div class="rank-row">' +
+          '<div class="rank-title">' + esc(cardTitleOf(rank[r].id)) + '</div>' +
+          '<div class="rank-num">' + Math.round(rank[r].rate * 100) + '%・' + rank[r].total + '回</div>' +
+          '</div>';
+      }
+    }
+
+    html += '<h2>直近30日</h2>';
+    var hasAny = Object.keys(state.logs).length > 0;
+    if (!hasAny) {
+      html += '<p class="small muted">まだ記録がないよ。</p>';
+    } else {
+      for (var d = 0; d < 30; d++) {
+        var day = shiftYmd(today, -d);
+        var log = state.logs[day];
+        html += '<div class="hist-row">' +
+          '<div class="hist-date">' + esc(formatYmd(day)) + '</div>';
+        if (!log) {
+          html += '<div class="hist-title hist-none">未記録</div><div class="hist-result"></div>';
+        } else {
+          html += '<div class="hist-title">' + esc(cardTitleOf(log.cardId)) + '</div>';
+          if (log.result) {
+            html += '<div class="hist-result' + (log.result === 'kept' ? ' kept' : '') + '">' +
+              esc(RESULT_ICON[log.result]) + '</div>';
+          } else {
+            html += '<div class="hist-result hist-none">未記録</div>';
+          }
+        }
+        html += '</div>';
+      }
+    }
+    viewEl.innerHTML = html;
+  }
+
+  /* ----------------------------------------------------------------
+     設定タブ
+  ---------------------------------------------------------------- */
+  function renderSettings() {
+    var days = Object.keys(state.logs).length;
+    var html = '<h1>設定</h1>';
+    html += '<p class="small">総記録日数：' + days + '日</p>';
+    html += '<hr class="hr">';
+    html += '<button class="btn" type="button" id="export">書き出し</button>';
+    html += '<button class="btn" type="button" id="importBtn">取り込み</button>';
+    html += '<input type="file" id="importFile" accept="application/json,.json" class="hidden">';
+    html += '<p class="field-note">取り込むと今の記録は上書きされるよ。</p>';
+    viewEl.innerHTML = html;
+
+    document.getElementById('export').addEventListener('click', onExport);
+    var fileEl = document.getElementById('importFile');
+    document.getElementById('importBtn').addEventListener('click', function () { fileEl.click(); });
+    fileEl.addEventListener('change', onImport);
+  }
+
+  function onExport() {
+    var data = JSON.stringify(state, null, 2);
+    var blob = new Blob([data], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'origin-daily-' + getToday() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function onImport(ev) {
+    var input = ev.currentTarget;
+    var file = input.files && input.files[0];
+    ui.importError = '';
+    if (!file) { return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var parsed = null;
+      try {
+        parsed = JSON.parse(String(reader.result));
+      } catch (err) {
+        ui.importError = 'ファイルを読み込めなかったよ。記録はそのままにしてある。';
+        input.value = '';
+        render();
+        return;
+      }
+      if (!isPlainObject(parsed) || !isPlainObject(parsed.logs)) {
+        ui.importError = 'この形式は取り込めないよ。記録はそのままにしてある。';
+        input.value = '';
+        render();
+        return;
+      }
+      if (!window.confirm('今の記録を上書きして取り込む？')) {
+        input.value = '';
+        render();
+        return;
+      }
+      state = normalize(parsed);
+      ui.reflecting = false;
+      ui.pendingResult = null;
+      save();
+      input.value = '';
+      render();
+    };
+    reader.onerror = function () {
+      ui.importError = 'ファイルを読み込めなかったよ。記録はそのままにしてある。';
+      input.value = '';
+      render();
+    };
+    reader.readAsText(file);
+  }
+
+  /* ----------------------------------------------------------------
+     ルーティング
+  ---------------------------------------------------------------- */
+  function render() {
+    renderBanner();
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute('data-tab') === ui.tab) {
+        tabs[i].classList.add('active');
+      } else {
+        tabs[i].classList.remove('active');
+      }
+    }
+    if (ui.tab === 'history') { renderHistory(); return; }
+    if (ui.tab === 'settings') { renderSettings(); return; }
+    renderToday();
+  }
+
+  var tabNodes = document.querySelectorAll('.tab');
+  for (var t = 0; t < tabNodes.length; t++) {
+    tabNodes[t].addEventListener('click', function (ev) {
+      var next = ev.currentTarget.getAttribute('data-tab');
+      if (next !== ui.tab) {
+        ui.tab = next;
+        ui.importError = '';
+        window.scrollTo(0, 0);
+      }
+      render();
+    });
+  }
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
