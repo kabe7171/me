@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Product, formatPrice } from "@/data/products";
+import type { Product } from "@/types/product";
+import { formatPrice } from "@/lib/format";
 
 export default function ProductCard({ product }: { product: Product }) {
   return (

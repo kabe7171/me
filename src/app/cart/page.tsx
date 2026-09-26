@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { formatPrice } from "@/data/products";
+import { formatPrice } from "@/lib/format";
 import Link from "next/link";
 
 export default function CartPage() {

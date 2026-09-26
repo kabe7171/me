@@ -1,5 +1,5 @@
 import ProductCard from "@/components/ProductCard";
-import { products, categories } from "@/data/products";
+import { products, getActiveCategories } from "@/data/products";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
 
       <section className="mb-8">
         <div className="flex flex-wrap gap-2 justify-center">
-          {categories.map((cat) => (
+          {getActiveCategories().map((cat) => (
             <span
               key={cat}
               className="px-3 py-1 bg-stone-200 text-stone-600 rounded-full text-sm"

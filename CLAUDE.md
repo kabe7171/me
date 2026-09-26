@@ -22,10 +22,20 @@ src/
 │   ├── Footer.tsx
 │   └── ProductCard.tsx
 ├── context/         # React Context
-│   └── CartContext.tsx
+│   └── CartContext.tsx  # カート状態（商品IDと数量だけ保持）
+├── types/           # 型定義
+│   └── product.ts   # Product / Category / Dimensions、CATEGORIES 定数
+├── lib/             # 純粋な補助関数
+│   └── format.ts    # 価格・寸法の表示整形
 └── data/            # データ層
-    └── products.ts  # 商品データ・ヘルパー関数
+    └── products.ts  # 商品データ・検索ヘルパー
 ```
+
+## データ構造のルール
+- カテゴリは `src/types/product.ts` の `CATEGORIES` に追加する（自由入力にしない）
+- 寸法・産地・素材は `details` の文章に埋めず、専用フィールドに入れる
+- 価格は税込の円を整数で持つ。表示は `formatPrice` を通す
+- カートは商品IDと数量だけを保持し、商品情報は `getProductById` で引く
 
 ## コマンド
 - `npm run dev` - 開発サーバー起動

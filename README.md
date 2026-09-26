@@ -42,14 +42,19 @@ npm start
 {
   id: "7",
   name: "商品名",
-  description: "商品の説明",
-  price: 100000,
-  category: "カテゴリ",
-  era: "年代",
+  description: "一覧に出す短い紹介文",
+  details: "詳細ページに出す補足説明",
+  price: 100000,            // 税込・円
+  category: "収納",          // src/types/product.ts の CATEGORIES から選ぶ
+  era: "1900年代",
+  origin: "イギリス",
+  material: "オーク材",
+  dimensions: { width: 100, depth: 50, height: 80 }, // cm
   image: "/images/xxx.jpg",
-  details: "詳細情報",
 }
 ```
+
+カテゴリを増やすときは `src/types/product.ts` の `CATEGORIES` に追加してください。
 
 ## 技術スタック
 
