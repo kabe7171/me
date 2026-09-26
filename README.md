@@ -1,11 +1,13 @@
-# Antique Gallery - アンティーク家具販売サイト
+# Photo Zines from Japan - 日本の写真ZINE・作品販売サイト
 
-ヨーロッパ・日本のアンティーク家具をオンラインで販売するWebサイトです。
+日本の写真家によるZINE（写真集）・プリント作品を海外の個人購入者・書店向けにオンラインで販売するWebサイトです。
 
 ## 機能
 
-- 商品一覧表示（カテゴリ分類）
-- 商品詳細ページ（年代・サイズ・説明）
+- 作品一覧表示（Zine / Print）
+- 作品詳細ページ（作家・仕様・エディション・価格）
+- 作家詳細ページ
+- 卸のご案内・問い合わせフォーム
 - ショッピングカート
 - お問い合わせフォーム
 
@@ -36,25 +38,34 @@ npm start
 
 ### 商品データの編集
 
-`src/data/products.ts` を編集して商品を追加・変更できます。
+`src/data/items.ts` を編集して作品を追加・変更できます。
 
 ```typescript
 {
-  id: "7",
-  name: "商品名",
-  description: "一覧に出す短い紹介文",
-  details: "詳細ページに出す補足説明",
-  price: 100000,            // 税込・円
-  category: "収納",          // src/types/product.ts の CATEGORIES から選ぶ
-  era: "1900年代",
-  origin: "イギリス",
-  material: "オーク材",
-  dimensions: { width: 100, depth: 50, height: 80 }, // cm
-  image: "/images/xxx.jpg",
+  id: "quiet-tokyo",
+  artistId: "aoi-kurata",   // src/data/artists.ts の作家 id
+  kind: "zine",
+  title: "Quiet Tokyo",
+  description: "A collection of black and white street photographs...",
+  priceJpy: 3200,            // 小売価格（円、整数）
+  wholesale: { priceJpy: 1900, minQuantity: 5 }, // 卸対応なしなら省略
+  edition: { signed: true, numbered: false },     // size省略でオープンエディション
+  stock: 12,                 // 0 = Sold out
+  year: 2023,
+  weightGrams: 180,          // 海外送料の見積もりに使う
+  images: ["/images/quiet-tokyo-1.jpg"],
+  tags: ["street", "black and white", "tokyo"],
+  spec: {
+    pages: 64,
+    size: { width: 148, height: 210 }, // mm
+    binding: "saddle-stitch",
+    printing: "Risograph, 2 colors",
+    language: "Japanese / English",
+  },
 }
 ```
 
-カテゴリを増やすときは `src/types/product.ts` の `CATEGORIES` に追加してください。
+作家を増やすときは `src/data/artists.ts` に、種類を増やすときは `src/types/catalog.ts` の `ITEM_KINDS` に追加してください。
 
 ## 技術スタック
 

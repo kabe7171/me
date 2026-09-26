@@ -1,7 +1,8 @@
-# Antique Gallery - アンティーク家具販売サイト
+# Photo Zines from Japan - 日本の写真ZINE・作品販売サイト
 
 ## プロジェクト概要
-アンティーク家具のオンライン販売サイト。Next.js (App Router) + TypeScript + Tailwind CSS で構築。
+日本の写真家によるZINE・プリント作品を海外向けに販売するサイト。個人向け小売と、海外の書店・セレクトショップ向け卸の両方を想定。
+Next.js (App Router) + TypeScript + Tailwind CSS で構築。UI文言は英語（海外購入者向けサイトのため）。
 
 ## 技術スタック
 - **フレームワーク**: Next.js 16 (App Router)
@@ -12,30 +13,37 @@
 ## ディレクトリ構成
 ```
 src/
-├── app/             # ページ (App Router)
-│   ├── page.tsx     # トップ（商品一覧）
-│   ├── products/[id]/  # 商品詳細
-│   ├── cart/        # カートページ
-│   └── contact/    # お問い合わせ
-├── components/      # 共通コンポーネント
+├── app/                 # ページ (App Router)
+│   ├── page.tsx         # トップ（作品一覧）
+│   ├── items/[id]/      # 作品詳細
+│   ├── artists/[id]/    # 作家詳細
+│   ├── wholesale/       # 卸のご案内・問い合わせ
+│   ├── cart/            # カートページ
+│   └── contact/         # お問い合わせ
+├── components/          # 共通コンポーネント
 │   ├── Header.tsx
 │   ├── Footer.tsx
-│   └── ProductCard.tsx
-├── context/         # React Context
-│   └── CartContext.tsx  # カート状態（商品IDと数量だけ保持）
-├── types/           # 型定義
-│   └── product.ts   # Product / Category / Dimensions、CATEGORIES 定数
-├── lib/             # 純粋な補助関数
-│   └── format.ts    # 価格・寸法の表示整形
-└── data/            # データ層
-    └── products.ts  # 商品データ・検索ヘルパー
+│   └── ItemCard.tsx
+├── context/             # React Context
+│   └── CartContext.tsx  # カート状態（作品IDと数量だけ保持）
+├── types/               # 型定義
+│   └── catalog.ts       # Item（ZineItem / PrintItem） / Artist / Edition / ItemKind
+├── lib/                 # 純粋な補助関数
+│   ├── format.ts        # 価格・サイズ・エディション表記の整形
+│   ├── currency.ts      # 米ドル参考表示用の為替定数（仮）
+│   └── site.ts          # サイト名・タグライン（仮）
+└── data/                # データ層
+    ├── artists.ts        # 作家データ（架空のサンプル）・検索ヘルパー
+    └── items.ts          # 作品データ（架空のサンプル）・検索ヘルパー
 ```
 
 ## データ構造のルール
-- カテゴリは `src/types/product.ts` の `CATEGORIES` に追加する（自由入力にしない）
-- 寸法・産地・素材は `details` の文章に埋めず、専用フィールドに入れる
-- 価格は税込の円を整数で持つ。表示は `formatPrice` を通す
-- カートは商品IDと数量だけを保持し、商品情報は `getProductById` で引く
+- 作品の種類（zine / print）は `src/types/catalog.ts` の `ITEM_KINDS` に追加する（自由入力にしない）
+- 寸法・仕様は各 `kind` の `spec` の専用フィールドに入れる。文章に埋め込まない
+- 価格は日本円の整数で持つ（`priceJpy`）。表示は `formatPrice`（円 + 米ドル参考額）を通す。為替は `src/lib/currency.ts` の定数（仮の参考値、決済は円建て）
+- 卸価格・最低数量は `wholesale`（`WholesaleTerms`）に持つ。卸はサイト上で決済せず、`/wholesale` の問い合わせフォームで受ける
+- カートは作品IDと数量だけを保持し、作品情報は `getItemById` で引く。`addToCart` は在庫数（`stock`）を超えて数量を増やさない
+- 作家名・作品はすべて架空のサンプルデータ（`src/data/artists.ts`, `src/data/items.ts` 参照）
 
 ## コマンド
 - `npm run dev` - 開発サーバー起動
@@ -44,13 +52,14 @@ src/
 
 ## 開発メモ
 - この環境では Google Fonts が取得できないため、システムフォントを使用
-- 商品画像はプレースホルダー表示（`/images/` 配下に配置想定）
+- 作品画像はプレースホルダー表示（`/images/` 配下に配置想定）
 - カートはクライアントサイドのみ（サーバー永続化なし）
+- サイト名は仮。`src/lib/site.ts` の1か所で変更できる
 
 ## 今後の拡張ポイント
-- [ ] 商品検索・フィルタリング機能
+- [ ] 決済連携（Stripe等、円建て）
+- [ ] 卸アカウント（承認制ログイン）
+- [ ] 海外送料の自動計算（`weightGrams` を使う）
 - [ ] 商品画像の追加
-- [ ] 決済連携（Stripe等）
-- [ ] お気に入り機能
-- [ ] 管理画面（商品登録・編集）
-- [ ] DB連携（商品データの永続化）
+- [ ] 絞り込み（作家・種類・タグ）
+- [ ] DB連携（作品データの永続化）

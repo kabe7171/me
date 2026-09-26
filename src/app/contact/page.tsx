@@ -13,9 +13,9 @@ export default function ContactPage() {
   if (submitted) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-        <h1 className="font-serif text-2xl text-stone-800 mb-4">送信完了</h1>
+        <h1 className="font-serif text-2xl text-stone-800 mb-4">Thank you</h1>
         <p className="text-stone-600">
-          お問い合わせありがとうございます。内容を確認の上、ご連絡いたします。
+          Thanks for getting in touch. We&apos;ll review your message and get back to you soon.
         </p>
       </div>
     );
@@ -23,11 +23,11 @@ export default function ContactPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
-      <h1 className="font-serif text-2xl text-stone-800 mb-8">お問い合わせ</h1>
+      <h1 className="font-serif text-2xl text-stone-800 mb-8">Contact</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-stone-700 mb-1">
-            お名前
+            Name
           </label>
           <input
             type="text"
@@ -38,7 +38,7 @@ export default function ContactPage() {
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-1">
-            メールアドレス
+            Email
           </label>
           <input
             type="email"
@@ -49,7 +49,7 @@ export default function ContactPage() {
         </div>
         <div>
           <label htmlFor="message" className="block text-sm font-medium text-stone-700 mb-1">
-            お問い合わせ内容
+            Message
           </label>
           <textarea
             id="message"
@@ -62,7 +62,7 @@ export default function ContactPage() {
           type="submit"
           className="w-full py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-medium"
         >
-          送信する
+          Send
         </button>
       </form>
     </div>

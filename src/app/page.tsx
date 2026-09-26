@@ -1,35 +1,35 @@
-import ProductCard from "@/components/ProductCard";
-import { products, getActiveCategories } from "@/data/products";
+import ItemCard from "@/components/ItemCard";
+import { items } from "@/data/items";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+
+const KIND_CHIPS = ["All", "Zines", "Prints"];
 
 export default function Home() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <section className="text-center mb-12">
         <h1 className="font-serif text-3xl md:text-4xl text-stone-800 mb-4">
-          Antique Gallery
+          {SITE_NAME}
         </h1>
-        <p className="text-stone-500 max-w-xl mx-auto">
-          ヨーロッパや日本のアンティーク家具を厳選。
-          歴史と職人技が宿る一点ものの家具をお届けします。
-        </p>
+        <p className="text-stone-500 max-w-xl mx-auto">{SITE_TAGLINE}</p>
       </section>
 
       <section className="mb-8">
         <div className="flex flex-wrap gap-2 justify-center">
-          {getActiveCategories().map((cat) => (
+          {KIND_CHIPS.map((chip) => (
             <span
-              key={cat}
+              key={chip}
               className="px-3 py-1 bg-stone-200 text-stone-600 rounded-full text-sm"
             >
-              {cat}
+              {chip}
             </span>
           ))}
         </div>
       </section>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {items.map((item) => (
+          <ItemCard key={item.id} item={item} />
         ))}
       </section>
     </div>
