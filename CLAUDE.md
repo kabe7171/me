@@ -1,7 +1,7 @@
-# Photo Zines from Japan - 日本の写真ZINE・作品販売サイト
+# Photo Zines & Photobooks from Japan - 日本のフォトZINE・写真集販売サイト
 
 ## プロジェクト概要
-日本の写真家によるZINE・プリント作品を海外向けに販売するサイト。個人向け小売と、海外の書店・セレクトショップ向け卸の両方を想定。
+日本の写真家によるフォトZINE・写真集を海外向けに販売するサイト。扱うのは写真の本だけ（プリント単体や写真以外のZINEは扱わない）。個人向け小売と、海外の書店・セレクトショップ向け卸の両方を想定。
 Next.js (App Router) + TypeScript + Tailwind CSS で構築。UI文言は英語（海外購入者向けサイトのため）。
 
 ## 技術スタック
@@ -27,7 +27,7 @@ src/
 ├── context/             # React Context
 │   └── CartContext.tsx  # カート状態（作品IDと数量だけ保持）
 ├── types/               # 型定義
-│   └── catalog.ts       # Item（ZineItem / PrintItem） / Artist / Edition / ItemKind
+│   └── catalog.ts       # Item / BookSpec / Artist / Edition / ItemKind
 ├── lib/                 # 純粋な補助関数
 │   ├── format.ts        # 価格・サイズ・エディション表記の整形
 │   ├── currency.ts      # 米ドル参考表示用の為替定数（仮）
@@ -38,8 +38,8 @@ src/
 ```
 
 ## データ構造のルール
-- 作品の種類（zine / print）は `src/types/catalog.ts` の `ITEM_KINDS` に追加する（自由入力にしない）
-- 寸法・仕様は各 `kind` の `spec` の専用フィールドに入れる。文章に埋め込まない
+- 作品の種類（zine = フォトZINE / photobook = 写真集）は `src/types/catalog.ts` の `ITEM_KINDS` に追加する（自由入力にしない）
+- 寸法・仕様は `spec`（`BookSpec`、ZINE・写真集で共通）の専用フィールドに入れる。文章に埋め込まない
 - 価格は日本円の整数で持つ（`priceJpy`）。表示は `formatPrice`（円 + 米ドル参考額）を通す。為替は `src/lib/currency.ts` の定数（仮の参考値、決済は円建て）
 - 卸価格・最低数量は `wholesale`（`WholesaleTerms`）に持つ。卸はサイト上で決済せず、`/wholesale` の問い合わせフォームで受ける
 - カートは作品IDと数量だけを保持し、作品情報は `getItemById` で引く。`addToCart` は在庫数（`stock`）を超えて数量を増やさない

@@ -2,7 +2,7 @@ import ItemCard from "@/components/ItemCard";
 import { items } from "@/data/items";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
-const KIND_CHIPS = ["All", "Zines", "Prints"];
+const KIND_CHIPS = ["All", "Photo zines", "Photobooks"];
 
 export default function Home() {
   return (

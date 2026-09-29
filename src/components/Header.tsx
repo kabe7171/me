@@ -15,7 +15,7 @@ export default function Header() {
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link href="/" className="hover:text-amber-300 transition-colors">
-            Zines &amp; Prints
+            Zines &amp; Photobooks
           </Link>
           <Link href="/" className="hover:text-amber-300 transition-colors">
             Artists

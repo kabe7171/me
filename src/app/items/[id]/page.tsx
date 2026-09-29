@@ -29,22 +29,11 @@ export default async function ItemPage({ params }: { params: Promise<{ id: strin
       ),
     },
     { label: "Year", value: item.year },
-    ...(item.kind === "zine"
-      ? [
-          { label: "Pages", value: item.spec.pages },
-          { label: "Size", value: formatSize(item.spec.size) },
-          { label: "Binding", value: BINDING_LABEL[item.spec.binding] },
-          { label: "Printing", value: item.spec.printing },
-          ...(item.spec.language ? [{ label: "Language", value: item.spec.language }] : []),
-        ]
-      : [
-          { label: "Process", value: item.spec.process },
-          { label: "Paper", value: item.spec.paper },
-          { label: "Paper size", value: formatSize(item.spec.size) },
-          ...(item.spec.imageSize
-            ? [{ label: "Image size", value: formatSize(item.spec.imageSize) }]
-            : []),
-        ]),
+    { label: "Pages", value: item.spec.pages },
+    { label: "Size", value: formatSize(item.spec.size) },
+    { label: "Binding", value: BINDING_LABEL[item.spec.binding] },
+    { label: "Printing", value: item.spec.printing },
+    ...(item.spec.language ? [{ label: "Language", value: item.spec.language }] : []),
     { label: "Edition", value: formatEdition(item.edition) },
     { label: "Weight", value: `${item.weightGrams} g` },
   ];

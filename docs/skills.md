@@ -5,7 +5,7 @@
 ### Server Component と Client Component の分離
 - ページ本体は Server Component のまま維持
 - インタラクティブな部分だけを別ファイルの Client Component に切り出す
-- 例: `products/[id]/page.tsx` (Server) + `AddToCartButton.tsx` (Client)
+- 例: `items/[id]/page.tsx` (Server) + `AddToCartButton.tsx` (Client)
 
 ### Dynamic Routes の params
 - Next.js 16 では `params` が `Promise` になった
@@ -14,7 +14,7 @@
 
 ### generateStaticParams
 - 静的に生成するパスを返す関数
-- 商品IDの一覧から自動生成: `products.map(p => ({ id: p.id }))`
+- 商品IDの一覧から自動生成: `items.map(i => ({ id: i.id }))`
 
 ## Tailwind CSS テクニック
 

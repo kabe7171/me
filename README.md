@@ -1,10 +1,10 @@
-# Photo Zines from Japan - 日本の写真ZINE・作品販売サイト
+# Photo Zines & Photobooks from Japan - 日本のフォトZINE・写真集販売サイト
 
-日本の写真家によるZINE（写真集）・プリント作品を海外の個人購入者・書店向けにオンラインで販売するWebサイトです。
+日本の写真家によるフォトZINE・写真集を海外の個人購入者・書店向けにオンラインで販売するWebサイトです。
 
 ## 機能
 
-- 作品一覧表示（Zine / Print）
+- 作品一覧表示（Photo zine / Photobook）
 - 作品詳細ページ（作家・仕様・エディション・価格）
 - 作家詳細ページ
 - 卸のご案内・問い合わせフォーム
@@ -44,7 +44,7 @@ npm start
 {
   id: "quiet-tokyo",
   artistId: "aoi-kurata",   // src/data/artists.ts の作家 id
-  kind: "zine",
+  kind: "zine",             // "zine"（フォトZINE） or "photobook"（写真集）
   title: "Quiet Tokyo",
   description: "A collection of black and white street photographs...",
   priceJpy: 3200,            // 小売価格（円、整数）

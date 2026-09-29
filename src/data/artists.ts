@@ -16,7 +16,7 @@ export const artists: Artist[] = [
     name: "Ren Hoshino",
     nameJa: "星野蓮",
     basedIn: "Osaka",
-    bio: "Ren Hoshino documents harbor towns and night life across western Japan. Working mostly with medium format film, Hoshino's prints and zines have a slow, observational quality. Based in Osaka since 2015.",
+    bio: "Ren Hoshino documents harbor towns and night life across western Japan. Working mostly with medium format film, Hoshino's photobooks and zines have a slow, observational quality. Based in Osaka since 2015.",
     instagram: "ren.hoshino",
   },
   {

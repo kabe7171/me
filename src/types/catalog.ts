@@ -1,11 +1,11 @@
 /** 作品の種類。 */
-export const ITEM_KINDS = ["zine", "print"] as const;
+export const ITEM_KINDS = ["zine", "photobook"] as const;
 export type ItemKind = (typeof ITEM_KINDS)[number];
 
 /** 種類の表示ラベル。 */
 export const ITEM_KIND_LABEL: Record<ItemKind, string> = {
-  zine: "Zine",
-  print: "Print",
+  zine: "Photo zine",
+  photobook: "Photobook",
 };
 
 export interface Artist {
@@ -71,39 +71,27 @@ interface ItemBase {
   tags: string[];
 }
 
-export interface ZineItem extends ItemBase {
-  kind: "zine";
-  spec: {
-    pages: number;
-    size: Size;
-    binding: "saddle-stitch" | "perfect-bound" | "thread-sewn" | "other";
-    /** 例: "Risograph, 2 colors" / "Offset, 4C" */
-    printing: string;
-    /** 例: "Japanese / English" */
-    language?: string;
-  };
+/** 本の仕様。フォトZINE・写真集で共通 */
+export interface BookSpec {
+  pages: number;
+  size: Size;
+  binding: "saddle-stitch" | "perfect-bound" | "thread-sewn" | "hardcover" | "other";
+  /** 例: "Risograph, 2 colors" / "Offset, 4C" */
+  printing: string;
+  /** 例: "Japanese / English" */
+  language?: string;
 }
 
-export interface PrintItem extends ItemBase {
-  kind: "print";
-  spec: {
-    /** 例: "Hahnemühle Photo Rag 308gsm" */
-    paper: string;
-    /** 例: "Archival pigment print" / "Gelatin silver print" */
-    process: string;
-    /** 用紙サイズ */
-    size: Size;
-    /** 画像部分のサイズ */
-    imageSize?: Size;
-  };
+export interface Item extends ItemBase {
+  kind: ItemKind;
+  spec: BookSpec;
 }
-
-export type Item = ZineItem | PrintItem;
 
 /** 綴じ方の表示ラベル。 */
-export const BINDING_LABEL: Record<ZineItem["spec"]["binding"], string> = {
+export const BINDING_LABEL: Record<BookSpec["binding"], string> = {
   "saddle-stitch": "Saddle stitch",
   "perfect-bound": "Perfect bound",
   "thread-sewn": "Thread sewn",
+  hardcover: "Hardcover",
   other: "Other",
 };
